@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema ({
-    username: {type: String, unique: true, require: true},
+    username: {type: String, unique: true, required: true},
     password: {type: String, required: true},
     profileImg: {type: String, default: "https://freesvg.org/img/abstract-user-flat-4.png"},
     email: {type: String, required: true},
