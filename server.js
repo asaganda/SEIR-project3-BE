@@ -3,8 +3,11 @@
 //___________________
 const express = require('express');
 const mongoose = require ('mongoose');
+const cors = require('cors');
 const app = express ();
 const db = mongoose.connection;
+const Post = require('./models/post.js');
+const User = require('./models/user.js');
 require('dotenv').config()
 //___________________
 //Port
@@ -39,6 +42,7 @@ app.use(express.static('public'));
 
 app.use(express.json());// returns middleware that only parses JSON - may or may not need it depending on your project
 
+app.use(cors());
 
 //___________________
 // Routes
