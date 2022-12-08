@@ -3,8 +3,11 @@
 //___________________
 const express = require('express');
 const mongoose = require ('mongoose');
+const cors = require('cors');
 const app = express ();
 const db = mongoose.connection;
+const Post = require('./models/post.js');
+const User = require('./models/user.js');
 require('dotenv').config()
 //___________________
 //Port
@@ -36,19 +39,69 @@ db.on('disconnected', () => console.log('mongo disconnected'));
 
 //use public folder for static assets
 app.use(express.static('public'));
+// returns middleware that only parses JSON - may or may not need it depending on your project
+app.use(express.json());
 
-app.use(express.json());// returns middleware that only parses JSON - may or may not need it depending on your project
-
+app.use(cors());
 
 //___________________
 // Routes
 //___________________
-//localhost:3000
-app.get('/' , (req, res) => {
-  res.json({
-    test: 'whatever'
-  })
-});
+  // Get All Posts (For Home Page)
+  app.get('/posts', (req, res)=>{
+    Post.find({}, (err, postMatch)=>{
+      res.json(postMatch);
+    });
+  });
+  // Get All Users (For Search Page) *** Not 100% sure this is the best approach
+  app.get('/users', (req, res)=>{
+    User.find({}, (err, userMatch)=>{
+      res.json(userMatch);
+    });
+  });
+  // Create Post
+  app.post('/posts', (req, res)=>{
+    Post.create(req.body, (err, createdPost)=>{
+      res.json(createdPost);
+    });
+  });
+  // Delete Post
+  app.delete('/posts/:id', (req, res)=>{
+    Post.findByIdAndRemove(req.params.id, (err, deletedPost)=>{
+      res.json(deletedPost);
+    });
+  });
+  // Edit Post (Both for users own posts and comments on others should be the same route)
+  app.put('/posts/:id', (req, res)=>{
+    Post.findByIdAndUpdate(req.params.id, req.body, {new:true}, (err, match)=>{
+      res.json(match);
+    });
+  });
+  // Create User
+  app.post('/users', (req, res)=>{
+    User.create(req.body, (err, createdUser)=>{
+      res.json(createdUser);
+    });
+  });
+  // Edit User
+  app.put('/users/:id', (req, res)=>{
+    User.findByIdAndUpdate(req.params.id, req.body, {new:true}, (err, match)=>{
+      res.json(match);
+    });
+  });
+  // Delete User
+  app.delete('/users/:id', (req, res)=>{
+    User.findByIdAndRemove(req.params.id, (err, deletedUser)=>{
+      res.json(deletedUser);
+    });
+  });
+  // Delete All Posts from User (for using when user is deleted)
+  app.delete('/allposts/:username', (req, res)=>{
+    Post.find({owner: req.params.username}).deleteMany((err, deletedPosts)=>{
+      res.json(deletedPosts);
+    });
+  });
+  // Get only one user (Login Page) ** Might not need to use this route since in theory we have the user when we get all the users 
 
 //___________________
 //Listener
