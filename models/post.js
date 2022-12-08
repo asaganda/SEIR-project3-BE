@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema ({
     comments:[
         {
             user: String,
-            text: String,
+            text: String
         }
     ],
     likes:[String]
