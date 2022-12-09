@@ -101,16 +101,22 @@ app.use(cors());
       res.json(deletedPosts);
     });
   });
-  // Delete all user comments on toher users posts
-  app.put('/allcomments/:username', (req, res)=>{
-    Post.find({}).updateMany(req.params.id, (err, deletedUser)=>{
+
+  // Remove user from any other user following and followers
+  app.put('/following/:username', (req, res)=>{
+    User.find({}).updateMany({$pull: {following:req.params.username}}, (err, deletedUser)=>{
+      res.json(deletedUser);
+    });
+  });
+  app.put('/followers/:username', (req, res)=>{
+    User.find({}).updateMany({$pull: {followers:req.params.username}}, (err, deletedUser)=>{
       res.json(deletedUser);
     });
   });
 
-  // Remove user from any other user following and followers
-  app.put('/following/:username', (req, res)=>{
-    User.find({}).updateMany(req.params.id, (err, deletedUser)=>{
+  // Delete all user comments on toher users posts
+  app.put('/allcomments/:username', (req, res)=>{
+    Post.find({}).updateMany({$pull:{comments:{user:req.params.username}}}, (err, deletedUser)=>{
       res.json(deletedUser);
     });
   });
