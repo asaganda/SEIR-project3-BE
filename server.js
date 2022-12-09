@@ -101,7 +101,19 @@ app.use(cors());
       res.json(deletedPosts);
     });
   });
-  // Get only one user (Login Page) ** Might not need to use this route since in theory we have the user when we get all the users 
+  // Delete all user comments
+  app.put('/users/:id', (req, res)=>{
+    Post.find({}).updateMany(req.params.id, (err, deletedUser)=>{
+      res.json(deletedUser);
+    });
+  });
+
+  // Remove user from any other user following and followers
+  app.put('/users/:id', (req, res)=>{
+    User.find({}).updateMany(req.params.id, (err, deletedUser)=>{
+      res.json(deletedUser);
+    });
+  });
 
 //___________________
 //Listener
